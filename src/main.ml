@@ -33,8 +33,8 @@ let histogram : 'a list -> 'a count list =
 
 let unpack (xs : 'a count) : int = let _, n = xs in n
 
-let compare_hist (a : 'a count) (b : 'a count) : int =
-    compare (unpack a) (unpack b)
+let compare_hist (k : int) (a : 'a count) (b : 'a count) : int =
+    k * compare (unpack a) (unpack b)
 
 let show_list (f : 'a -> string) : 'a list -> string =
     P.sprintf "\t#\n---------\n%s" |. S.concat "\n" |. L.rev_map f
@@ -55,13 +55,17 @@ let usage : string =
 "HistOCaml
 tiny tool that tallies things (written in OCaml)
 
-FLAGS   -a or --a   sort output alphabetically
+FLAGS   -a      sort output alphabetically
+        -b      sort output reverse alphabetically
+        -r      reverse output
 INPUT   stdin
 OUTPUT  stdout"
 
 let control_panel : (string list -> unit) = function
-    | [_; "-a"] | [_; "--a"] -> pipeline (fun x -> x) ()
-    | [_] -> pipeline (L.fast_sort compare_hist) ()
+    | [_; "-a"] -> pipeline (fun x -> x) ()
+    | [_; "-b"] -> pipeline L.rev ()
+    | [_; "-r"] -> pipeline (L.fast_sort @@ compare_hist @@ -1) ()
+    | [_] -> pipeline (L.fast_sort @@ compare_hist 1) ()
     | _ -> print_endline usage
 
 let main = control_panel |. args
