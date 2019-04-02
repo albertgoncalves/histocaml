@@ -29,9 +29,7 @@ let histogram : 'a list -> 'a count list =
                     loop 1 ((x, n)::accu) xs in
     loop 1 [] |. L.fast_sort compare
 
-let unpack (xs : 'a count) : int =
-    let _, n = xs in
-    n
+let unpack (xs : 'a count) : int = let _, n = xs in n
 
 let compare_hist (a : 'a count) (b : 'a count) : int =
     compare (unpack a) (unpack b)
@@ -39,13 +37,12 @@ let compare_hist (a : 'a count) (b : 'a count) : int =
 let show_list (f : 'a -> string) : 'a list -> string =
     P.sprintf "\t#\n---------\n%s" |. S.concat "\n" |. L.rev_map f
 
-let hist_to_string (f : 'a -> string) (xs : 'a count) : string =
-    let (x, n) = xs in
-    P.sprintf "%s\t%d" (f x) n
+let hist_to_string (xs : string count) : string =
+    let (x, n) = xs in P.sprintf "%s\t%d" x n
 
 let main =
     print_endline
-    |. show_list @@ hist_to_string (fun x -> x)
+    |. show_list hist_to_string
     |. L.fast_sort compare_hist
     |. histogram
     |. read_lines
