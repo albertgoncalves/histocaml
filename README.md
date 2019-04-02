@@ -8,7 +8,14 @@ Needed things
 
 Quick start
 ---
-`./make` and `./example` are just shortcuts to:
+```
+$ nix-shell
+[nix-shell:~/histocaml]$ ./make
+[nix-shell:~/histocaml]$ ./example
+```
+
+---
+This ritual is more or less the same as the above incantation.
 ```
 $ nix-shell
 [nix-shell:~/histocaml]$ ocamlopt src/main.ml -o hist
