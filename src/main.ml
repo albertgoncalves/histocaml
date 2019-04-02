@@ -35,7 +35,7 @@ let histogram : 'a list -> 'a count list =
                     loop 1 ((x, n)::accu) xs in
     loop 1 [] |. L.fast_sort compare
 
-let unpack (xs : 'a count) : int = let _, n = xs in n
+let unpack (xs : 'a count) : int = let (_, n) = xs in n
 
 let compare_hist (k : int) (a : 'a count) (b : 'a count) : int =
     k * compare (unpack a) (unpack b)
@@ -79,8 +79,8 @@ let parse : (string list -> param list) =
     loop []
 
 let compare_param _ : (param -> int) = function
-    | Delimiter _ -> 2
-    | Error -> 1
+    | Error -> 2
+    | Delimiter _ -> 1
     | _ -> 0
 
 let select_delimiter : (param list -> (string * param list)) = function
@@ -91,7 +91,7 @@ let control_panel (delimiter : string) : (param list -> unit) = function
     | Alpha::_ -> pipeline delimiter (fun x -> x) ()
     | RevAlpha::_ -> pipeline delimiter L.rev ()
     | Reverse::_ -> pipeline delimiter (L.fast_sort @@ compare_hist @@ -1) ()
-    | Error::_ -> print_endline usage
+    | Error::_ -> (fun _ -> exit 1) (print_endline usage)
     | _ -> pipeline delimiter (L.fast_sort @@ compare_hist 1) ()
 
 let main : (unit -> unit) =
