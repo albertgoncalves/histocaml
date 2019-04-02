@@ -87,12 +87,14 @@ let select_delimiter : (param list -> (string * param list)) = function
     | (Delimiter x)::xs -> (x, xs)
     | xs -> ("\t", xs)
 
-let control_panel (delimiter : string) : (param list -> unit) = function
-    | Alpha::_ -> pipeline delimiter (fun x -> x) ()
-    | RevAlpha::_ -> pipeline delimiter L.rev ()
-    | Reverse::_ -> pipeline delimiter (L.fast_sort @@ compare_hist @@ -1) ()
-    | Error::_ -> (fun _ -> exit 1) (print_endline usage)
-    | _ -> pipeline delimiter (L.fast_sort @@ compare_hist 1) ()
+let control_panel (delimiter : string) : (param list -> unit) =
+    let pipeline' = pipeline delimiter in
+    function
+        | Alpha::_ -> pipeline' (fun x -> x) ()
+        | RevAlpha::_ -> pipeline' L.rev ()
+        | Reverse::_ -> pipeline' (L.fast_sort @@ compare_hist @@ -1) ()
+        | Error::_ -> (fun _ -> exit 1) (print_endline usage)
+        | _ -> pipeline' (L.fast_sort @@ compare_hist 1) ()
 
 let main : (unit -> unit) =
     uncurry control_panel
