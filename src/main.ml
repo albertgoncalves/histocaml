@@ -89,16 +89,16 @@ let control_panel (delimiter : string) : (param list -> unit) =
     function
         | Alpha::_ -> pipeline' (fun x -> x) ()
         | RevAlpha::_ -> pipeline' L.rev ()
-        | Reverse::_ -> pipeline' (L.fast_sort @@ compare_hist @@ -1) ()
+        | Reverse::_ -> pipeline' (L.stable_sort @@ compare_hist @@ -1) ()
         (* NOTE: additional [-d ...] flags will throw an error! *)
         | Error::_ | (Delimiter _)::_ ->
             (fun _ -> exit 1) @@ print_endline usage
-        | _ -> pipeline' (L.fast_sort @@ compare_hist 1) ()
+        | _ -> pipeline' (L.stable_sort @@ compare_hist 1) ()
 
 let main : (unit -> unit) =
     uncurry control_panel
     |. select_delimiter
-    |. L.fast_sort compare_param
+    |. L.stable_sort compare_param
     |. parse
     |. args
 
