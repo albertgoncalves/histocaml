@@ -1,0 +1,8 @@
+*
+!.gitignore
+!shell.nix
+!.ocp-indent
+!src
+!main.ml
+!example*
+!make
