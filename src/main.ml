@@ -64,7 +64,7 @@ USAGE   hist [-a -b -r] [-d DELIMITER]
 FLAGS   -a              sort output alphabetically
         -b              sort output reverse alphabetically
         -r              reverse default output
-        -d DELIMITER    replace default delimiter with given string
+        -d DELIMITER    replace default delimiter (\\t) with given string
 INPUT   stdin
 OUTPUT  stdout"
 
