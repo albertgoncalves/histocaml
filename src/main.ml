@@ -1,6 +1,8 @@
+module A = Array
 module L = List
 module P = Printf
 module S = String
+module Y = Sys
 
 type 'a count = ('a * int)
 
@@ -40,11 +42,28 @@ let show_list (f : 'a -> string) : 'a list -> string =
 let hist_to_string (xs : string count) : string =
     let (x, n) = xs in P.sprintf "%s\t%d" x n
 
-let main =
+let args () : string list = A.to_list Y.argv
+
+let pipeline (f : 'a count list -> 'a count list) : (unit -> unit) =
     print_endline
     |. show_list hist_to_string
-    |. L.fast_sort compare_hist
+    |. f
     |. histogram
     |. read_lines
+
+let usage : string =
+"HistOCaml
+tiny tool that tallies things (written in OCaml)
+
+FLAGS   -a or --a   sort output alphabetically
+INPUT   stdin
+OUTPUT  stdout"
+
+let control_panel : (string list -> unit) = function
+    | [_; "-a"] | [_; "--a"] -> pipeline (fun x -> x) ()
+    | [_] -> pipeline (L.fast_sort compare_hist) ()
+    | _ -> print_endline usage
+
+let main = control_panel |. args
 
 let () = main ()
