@@ -2,6 +2,7 @@
 !.gitignore
 !shell.nix
 !.ocp-indent
+!README.md
 !src
 !main.ml
 !example*
