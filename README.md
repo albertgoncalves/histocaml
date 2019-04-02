@@ -30,11 +30,11 @@ ab
 1
 
 [nix-shell:~/histocaml]$ cat example.txt | ./hist
-        #
+#
 ---------
-1       8
-c       4
-abc     2
-ab      1
+8       1
+4       c
+2       abc
+1       ab
 ```
 

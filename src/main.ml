@@ -37,10 +37,10 @@ let compare_hist (k : int) (a : 'a count) (b : 'a count) : int =
     k * compare (unpack a) (unpack b)
 
 let show_list (f : 'a -> string) : 'a list -> string =
-    P.sprintf "\t#\n---------\n%s" |. S.concat "\n" |. L.rev_map f
+    P.sprintf "#\n---------\n%s" |. S.concat "\n" |. L.rev_map f
 
 let hist_to_string (xs : string count) : string =
-    let (x, n) = xs in P.sprintf "%s\t%d" x n
+    let (x, n) = xs in P.sprintf "%d\t%s" n x
 
 let args () : string list = A.to_list Y.argv
 
