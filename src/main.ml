@@ -79,7 +79,8 @@ let parse : (string list -> param list) =
     loop []
 
 let compare_param _ : (param -> int) = function
-    | Delimiter _ -> 1
+    | Delimiter _ -> 2
+    | Error -> 1
     | _ -> 0
 
 let select_delimiter : (param list -> (string * param list)) = function
@@ -93,7 +94,7 @@ let control_panel (delimiter : string) : (param list -> unit) = function
     | Error::_ -> print_endline usage
     | _ -> pipeline delimiter (L.fast_sort @@ compare_hist 1) ()
 
-let main =
+let main : (unit -> unit) =
     uncurry control_panel
     |. select_delimiter
     |. L.fast_sort compare_param
