@@ -50,4 +50,3 @@ COUNT;ELEM
 1;ab
 8;1
 ```
-

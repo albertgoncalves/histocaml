@@ -7,3 +7,5 @@
 !main.ml
 !example*
 !make
+!eval
+!shuffle.ml
