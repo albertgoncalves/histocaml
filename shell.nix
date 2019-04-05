@@ -8,7 +8,7 @@ with pkgs; mkShell {
             ocp-indent
             utop
         ])
-    ] ++ (with python36Packages; [
+    ] ++ (with python37Packages; [
         (csvkit.overridePythonAttrs (oldAttrs: {checkPhase = "true";}))
     ]);
     shellHook = ''
@@ -16,5 +16,6 @@ with pkgs; mkShell {
             alias ls='ls --color=auto'
             alias ll='ls -al'
         fi
+        alias csvlook="csvlook --no-inference"
     '';
 }
