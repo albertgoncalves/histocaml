@@ -21,8 +21,9 @@ OUTPUT  stdout"
 
 let (|.) (f : 'b -> 'c) (g : 'a -> 'b) : ('a -> 'c) = fun x -> f (g x)
 
-let uncurry (f : 'a -> 'b -> 'c) (ab : ('a * 'b)) : 'c =
-    let (a, b) = ab in f a b
+let uncurry (f : 'a -> 'b -> 'c) ((a, b) : ('a * 'b)) : 'c = f a b
+
+let flip (f : 'a -> 'b -> 'c) (b : 'b) (a : 'a) : 'c = f a b
 
 let read_line () : string option =
     try Some (input_line stdin) with End_of_file -> None
@@ -34,34 +35,45 @@ let read_lines : (unit -> string list) =
             | None -> accu in
     loop [] |. read_line
 
-let histogram : 'a list -> 'a count list =
-    let rec loop (n : int) (accu : 'a count list) : 'a list -> 'a count list =
+let histogram : 'a list -> ('a count list * int) =
+    let rec loop (n : int) (m : int) (accu : 'a count list)
+        : 'a list -> ('a count list * int) =
         function
-            | [] -> []
-            | [x] -> (x, n)::accu
+            | [] -> ([], 0)
+            | [x] -> ((x, n)::accu, n + m)
             | x::(xx::_ as xs) ->
                 if x = xx then
-                    loop (n + 1) accu xs
+                    loop (n + 1) m accu xs
                 else
-                    loop 1 ((x, n)::accu) xs in
-    loop 1 [] |. L.fast_sort compare
+                    loop 1 (n + m) ((x, n)::accu) xs in
+    loop 1 0 [] |. L.fast_sort compare
 
 let compare_hist (k : int) (a : 'a count) (b : 'a count) : int =
     k * compare (snd a) (snd b)
 
-let show_hist (delimiter : string) (f : 'a -> string) : 'a list -> string =
-    (P.sprintf "COUNT%sELEM\n%s" delimiter) |.  S.concat "\n" |. L.rev_map f
+let hist_to_string (delimiter : string) (m : int) ((x, n) : string count)
+    : string =
+    let m' = float_of_int m in
+    let n' = float_of_int n in
+    let p = n' /. m' in
+    let p' = (flip S.make '*' |. int_of_float) (p *. 100.0) in
+    P.sprintf "%s%s%d%s%.4f%s%s" x delimiter n delimiter p delimiter p'
 
-let hist_to_string (delimiter : string) (xs : string count) : string =
-    let (x, n) = xs in P.sprintf "%d%s%s" n delimiter x
+let show_hist (delimiter : string) ((xs, m) : 'a list * int) : string =
+    begin
+        (P.sprintf "ELEM%sCOUNT%sPCT%sHIST\n%s" delimiter delimiter delimiter)
+        |. S.concat "\n"
+        |. L.rev_map (hist_to_string delimiter m)
+    end xs
 
 let args () : string list = L.tl @@ A.to_list Y.argv
 
 let pipeline (delimiter : string) (f : 'a count list -> 'a count list)
     : (unit -> unit) =
+    let apply f (xs, m) = (f xs, m) in
     print_endline
-    |. show_hist delimiter (hist_to_string delimiter)
-    |. f
+    |. show_hist delimiter
+    |. apply f
     |. histogram
     |. read_lines
 
@@ -82,7 +94,7 @@ let compare_param _ : (param -> int) = function
 
 let select_delimiter : (param list -> (string * param list)) = function
     | (Delimiter x)::xs -> (x, xs)
-    | xs -> ("\t", xs)
+    | xs -> (",", xs)
 
 let control_panel (delimiter : string) : (param list -> unit) =
     let pipeline' = pipeline delimiter in

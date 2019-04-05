@@ -8,7 +8,9 @@ with pkgs; mkShell {
             ocp-indent
             utop
         ])
-    ];
+    ] ++ (with python36Packages; [
+        (csvkit.overridePythonAttrs (oldAttrs: {checkPhase = "true";}))
+    ]);
     shellHook = ''
         if [ $(uname -s) = "Darwin" ]; then
             alias ls='ls --color=auto'
