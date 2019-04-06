@@ -56,7 +56,7 @@ let hist_to_string (delimiter : string) (m : int) ((x, n) : string count)
     let m' = float_of_int m in
     let n' = float_of_int n in
     let p = n' /. m' in
-    let p' = (flip S.make '*' |. int_of_float) (p *. 100.0) in
+    let p' = (flip S.make '*' |. int_of_float) (p *. 50.0) in
     P.sprintf "%s%s%d%s%.4f%s%s" x delimiter n delimiter p delimiter p'
 
 let show_hist (delimiter : string) ((xs, m) : 'a list * int) : string =
